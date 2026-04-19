@@ -1,0 +1,6 @@
+{
+  "name": "english-grammar-web",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Статика Mini App / лендинг теста (деплой на Vercel без сборки)"
+}

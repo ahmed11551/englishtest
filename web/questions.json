@@ -1,0 +1,23 @@
+[
+  {"id": 1, "text": "She ___ to the gym every day.", "options": {"a": "go", "b": "goes", "c": "going"}, "topic": "Present Simple", "correct": "b"},
+  {"id": 2, "text": "They ___ dinner right now.", "options": {"a": "have", "b": "are having", "c": "having"}, "topic": "Present Continuous", "correct": "b"},
+  {"id": 3, "text": "I ___ my keys yesterday.", "options": {"a": "lose", "b": "lost", "c": "have lost"}, "topic": "Past Simple", "correct": "b"},
+  {"id": 4, "text": "She ___ already finished her homework.", "options": {"a": "did", "b": "has", "c": "have"}, "topic": "Present Perfect", "correct": "b"},
+  {"id": 5, "text": "We ___ in this city since 2010.", "options": {"a": "live", "b": "lived", "c": "have lived"}, "topic": "Present Perfect", "correct": "c"},
+  {"id": 6, "text": "If I ___ rich, I would travel the world.", "options": {"a": "am", "b": "were", "c": "would be"}, "topic": "Second Conditional (form focus)", "correct": "b"},
+  {"id": 7, "text": "He ___ to London next week.", "options": {"a": "goes", "b": "is going", "c": "go"}, "topic": "Future (plans)", "correct": "b"},
+  {"id": 8, "text": "There isn’t ___ milk in the fridge.", "options": {"a": "some", "b": "any", "c": "a"}, "topic": "Quantifiers", "correct": "b"},
+  {"id": 9, "text": "I have ___ friends in this city.", "options": {"a": "much", "b": "many", "c": "little"}, "topic": "Countable nouns", "correct": "b"},
+  {"id": 10, "text": "There is ___ water left.", "options": {"a": "few", "b": "little", "c": "many"}, "topic": "Uncountable nouns", "correct": "b"},
+  {"id": 11, "text": "He ___ play the piano when he was a child.", "options": {"a": "can", "b": "could", "c": "must"}, "topic": "Past ability", "correct": "b"},
+  {"id": 12, "text": "You ___ wear a seatbelt. It’s the law.", "options": {"a": "can", "b": "must", "c": "may"}, "topic": "Obligation", "correct": "b"},
+  {"id": 13, "text": "She asked me where I ___.", "options": {"a": "live", "b": "lived", "c": "am living"}, "topic": "Reported Speech", "correct": "b"},
+  {"id": 14, "text": "He ___ go to the party if he finishes work.", "options": {"a": "might", "b": "must", "c": "should"}, "topic": "Possibility", "correct": "a"},
+  {"id": 15, "text": "If it rains, we ___.", "options": {"a": "stay", "b": "will stay", "c": "stayed"}, "topic": "First Conditional", "correct": "b"},
+  {"id": 16, "text": "If I had more money, I ___ a car.", "options": {"a": "buy", "b": "would buy", "c": "will buy"}, "topic": "Second Conditional", "correct": "b"},
+  {"id": 17, "text": "I saw ___ interesting film yesterday.", "options": {"a": "a", "b": "an", "c": "the"}, "topic": "Articles", "correct": "b"},
+  {"id": 18, "text": "___ sun rises in the east.", "options": {"a": "A", "b": "The", "c": "—"}, "topic": "Articles", "correct": "b"},
+  {"id": 19, "text": "He ___ me that he was tired.", "options": {"a": "said", "b": "told", "c": "spoke"}, "topic": "Tell vs Say", "correct": "b"},
+  {"id": 20, "text": "Please ___ at the board.", "options": {"a": "see", "b": "watch", "c": "look"}, "topic": "Look vs See", "correct": "c"},
+  {"id": 21, "text": "I’m not interested ___ politics.", "options": {"a": "on", "b": "in", "c": "at"}, "topic": "Prepositions", "correct": "b"}
+]
