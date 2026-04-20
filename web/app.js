@@ -8,6 +8,8 @@
   }
 
   const root = document.getElementById("root");
+  const prefersReducedMotion =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const LEVEL_BANDS = [
     [0, 3, "Pre-A1", "pre_a1"],
@@ -85,9 +87,21 @@
       </div>
       <p class="question-text">${escapeHtml(q.id + ". " + q.text)}</p>
       <div class="opts">${optsHtml}</div>
+      <p class="question-meta">Осталось ${questions.length - (index + 1)} вопросов</p>
       </div>`;
     root.querySelectorAll(".opt-btn").forEach((btn) => {
-      btn.onclick = () => onPick(btn.getAttribute("data-ch"));
+      btn.onclick = () => {
+        if (btn.disabled) return;
+        const chosen = btn.getAttribute("data-ch");
+        root.querySelectorAll(".opt-btn").forEach((other) => {
+          other.disabled = true;
+          if (other === btn) other.classList.add("opt-btn-selected");
+          else other.classList.add("opt-btn-dimmed");
+        });
+        fireHaptic("impact");
+        const delay = prefersReducedMotion ? 40 : 220;
+        setTimeout(() => onPick(chosen), delay);
+      };
     });
   }
 
@@ -131,10 +145,25 @@
     };
   }
 
+  function getNextLevelInfo(score) {
+    for (let i = 0; i < LEVEL_BANDS.length; i++) {
+      const [lo, hi, label] = LEVEL_BANDS[i];
+      if (score >= lo && score <= hi) {
+        const next = LEVEL_BANDS[i + 1];
+        if (!next) return { hasNext: false, text: "Максимальный уровень в этой версии теста достигнут." };
+        const need = Math.max(0, next[0] - score);
+        return { hasNext: true, text: `До уровня ${next[2]} осталось ${need} правильных ответов.` };
+      }
+    }
+    return { hasNext: false, text: "" };
+  }
+
   function renderResults(questions, answers) {
     const score = answers.filter((a) => a.is_correct).length;
     const [levelLabel, levelKey] = scoreToLevel(score);
+    const accuracy = Math.round((score / questions.length) * 100);
     const wrong = uniqueSortedWrongTopics(answers);
+    const nextLevel = getNextLevelInfo(score);
     let mistakesHtml;
     if (wrong.length) {
       mistakesHtml = `<ul class="topic-list">${wrong.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ul>`;
@@ -145,27 +174,57 @@
     const recommendations = buildPersonalRecommendations(wrong);
     const recommendationsHtml = `
       <div class="recommend-card">
-        <div class="block-title">${escapeHtml(recommendations.title)}</div>
-        <ul class="topic-list">${recommendations.points.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+        <div class="recommend-head">
+          <span class="recommend-icon" aria-hidden="true">★</span>
+          <div class="block-title">${escapeHtml(recommendations.title)}</div>
+        </div>
+        <ul class="topic-list topic-list-tight">${recommendations.points
+          .map((p) => `<li>${escapeHtml(p)}</li>`)
+          .join("")}</ul>
         <p class="recommend-cta">
           Если ты хочешь повысить свой уровень и научиться говорить по-английски. Я могу в этом помочь.
           Переходи на сайт и оставь заявку. Первый урок бесплатный.
         </p>
-        <a class="btn-primary promo-btn" href="https://desharschool.ru" target="_blank" rel="noopener noreferrer">Перейти на сайт</a>
+        <div class="cta-stack">
+          <a class="btn-primary promo-btn" href="https://desharschool.ru" target="_blank" rel="noopener noreferrer">Перейти на сайт</a>
+          <a class="btn-ghost cta-secondary" href="https://t.me/desharschool" target="_blank" rel="noopener noreferrer">Написать в Telegram</a>
+        </div>
+        <div class="sticky-cta-wrap">
+          <a class="btn-primary promo-btn sticky-cta" href="https://desharschool.ru" target="_blank" rel="noopener noreferrer">Перейти на сайт</a>
+        </div>
       </div>`;
     root.innerHTML = `
       <div class="results enter-anim">
         <h2>Результаты</h2>
-        <p class="stat">Правильных ответов: <strong>${score}</strong> из ${questions.length}</p>
-        <p class="stat">Уровень по шкале теста: <strong>${escapeHtml(levelLabel)}</strong></p>
-        <div class="level-block">${escapeHtml(levelText)}</div>
-        <div class="block-title">Темы, в которых были ошибки</div>
-        ${mistakesHtml}
-        ${recommendationsHtml}
+        <div class="kpi-grid reveal-1">
+          <div class="kpi-card kpi-countup" data-countup-id="score" data-target="${score}">
+            <div class="kpi-label">Правильные ответы</div>
+            <div class="kpi-value"><span class="kpi-main">0</span><span class="kpi-sub">/ ${questions.length}</span></div>
+          </div>
+          <div class="kpi-card kpi-countup" data-countup-id="accuracy" data-target="${accuracy}">
+            <div class="kpi-label">Точность</div>
+            <div class="kpi-value"><span class="kpi-main">0</span><span class="kpi-sub">%</span></div>
+          </div>
+          <div class="kpi-card kpi-card-wide">
+            <div class="kpi-label">Текущий уровень</div>
+            <div class="kpi-value">${escapeHtml(levelLabel)}</div>
+            <div class="kpi-hint">${escapeHtml(nextLevel.text)}</div>
+          </div>
+        </div>
+        <div class="section-card section-card-soft reveal-2">
+          <div class="level-block">${escapeHtml(levelText)}</div>
+        </div>
+        <div class="section-card reveal-3">
+          <div class="block-title">Темы, в которых были ошибки</div>
+          ${mistakesHtml}
+        </div>
+        <div class="reveal-4">${recommendationsHtml}</div>
         <div class="btn-row" style="margin-top:18px">
           <button type="button" class="btn-ghost" id="btn-retry">Пройти ещё раз</button>
         </div>
       </div>`;
+    runKpiCountup();
+    fireHaptic("success");
     document.getElementById("btn-retry").onclick = () => location.reload();
   }
 
@@ -189,7 +248,17 @@
           is_correct: isCorrect,
         });
         index += 1;
-        step();
+        if (prefersReducedMotion) {
+          step();
+          return;
+        }
+        const screen = root.querySelector(".question-screen");
+        if (!screen) {
+          step();
+          return;
+        }
+        screen.classList.add("leave-anim");
+        setTimeout(step, 170);
       });
     }
 
@@ -227,6 +296,43 @@
       arr[i] = arr[j];
       arr[j] = tmp;
     }
+  }
+
+  function fireHaptic(kind) {
+    if (!tg || !tg.HapticFeedback) return;
+    try {
+      if (kind === "success") tg.HapticFeedback.notificationOccurred("success");
+      else tg.HapticFeedback.impactOccurred("light");
+    } catch (_e) {
+      // no-op: haptics are optional
+    }
+  }
+
+  function runKpiCountup() {
+    if (prefersReducedMotion) {
+      root.querySelectorAll(".kpi-countup").forEach((el) => {
+        const target = Number(el.getAttribute("data-target") || 0);
+        const main = el.querySelector(".kpi-main");
+        if (main) main.textContent = String(target);
+      });
+      return;
+    }
+    const durationMs = 700;
+    const startedAt = performance.now();
+    const items = Array.from(root.querySelectorAll(".kpi-countup")).map((el) => ({
+      target: Number(el.getAttribute("data-target") || 0),
+      node: el.querySelector(".kpi-main"),
+    }));
+    function tick(ts) {
+      const p = Math.min(1, (ts - startedAt) / durationMs);
+      const eased = 1 - Math.pow(1 - p, 3);
+      items.forEach((item) => {
+        if (!item.node) return;
+        item.node.textContent = String(Math.round(item.target * eased));
+      });
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   fetch("questions.json")
