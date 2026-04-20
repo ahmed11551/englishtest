@@ -336,20 +336,15 @@ async def on_quiz_answer(
         mistakes_block = "Темы, в которых были ошибки:\n" + "\n".join(
             f"• {t}" for t in wrong_topics
         )
-        repeat_block = "Имеет смысл повторить в первую очередь:\n" + "\n".join(
-            f"• {t}" for t in wrong_topics
-        )
     else:
         mistakes_block = "Темы, в которых были ошибки: нет — все ответы верные."
-        repeat_block = "Имеет смысл повторить: можно поддерживать уровень практикой по всем блокам."
 
     result_text = (
         "📊 Результаты теста\n\n"
         f"Правильных ответов: {score} из {len(QUESTIONS)}\n"
         f"Уровень по шкале теста: {level_label}\n\n"
-        f"{mistakes_block}\n\n"
-        f"{repeat_block}\n\n"
-        f"{LEVEL_TEXTS[level_key]}"
+        f"{LEVEL_TEXTS[level_key]}\n\n"
+        f"{mistakes_block}"
     )
 
     try:

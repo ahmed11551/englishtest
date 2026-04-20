@@ -86,6 +86,7 @@ body {
 .main-card {
   padding: 20px 18px 22px;
   margin-bottom: 14px;
+  overflow: hidden;
 }
 
 .progress-row {
@@ -144,6 +145,21 @@ body {
   font-size: 0.95rem;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeSlideIn 0.35s ease forwards;
+}
+
+.opt-btn:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.opt-btn:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.opt-btn:nth-child(3) {
+  animation-delay: 0.19s;
 }
 
 .opt-btn:hover {
@@ -251,6 +267,24 @@ body {
   white-space: pre-wrap;
 }
 
+.promo-card {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.38);
+  background: rgba(14, 165, 233, 0.1);
+}
+
+.promo-text {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.promo-btn {
+  width: 100%;
+}
+
 .footer-card {
   padding: 18px;
   text-align: center;
@@ -272,4 +306,30 @@ body {
 
 .footer-card .btn-primary {
   width: 100%;
+}
+
+.enter-anim {
+  animation: fadeUpIn 0.32s ease;
+}
+
+@keyframes fadeUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

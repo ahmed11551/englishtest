@@ -77,13 +77,15 @@
       )
       .join("");
     root.innerHTML = `
+      <div class="question-screen enter-anim">
       <div class="progress-row">
         <span>Вопрос</span>
         <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
         <span class="q-num">${index + 1}/${questions.length}</span>
       </div>
       <p class="question-text">${escapeHtml(q.id + ". " + q.text)}</p>
-      <div class="opts">${optsHtml}</div>`;
+      <div class="opts">${optsHtml}</div>
+      </div>`;
     root.querySelectorAll(".opt-btn").forEach((btn) => {
       btn.onclick = () => onPick(btn.getAttribute("data-ch"));
     });
@@ -110,25 +112,29 @@
     const [levelLabel, levelKey] = scoreToLevel(score);
     const wrong = uniqueSortedWrongTopics(answers);
     let mistakesHtml;
-    let repeatHtml;
     if (wrong.length) {
       mistakesHtml = `<ul class="topic-list">${wrong.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ul>`;
-      repeatHtml = `<ul class="topic-list">${wrong.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ul>`;
     } else {
       mistakesHtml = `<p class="stat">Ошибок по темам нет — все ответы верные.</p>`;
-      repeatHtml = `<p class="stat">Можно поддерживать уровень практикой по всем блокам.</p>`;
     }
     const levelText = LEVEL_TEXTS[levelKey] || "";
+    const promoHtml = `
+      <div class="promo-card">
+        <p class="promo-text">
+          Если ты хочешь повысить свой уровень и научиться говорить по-английски. Я могу в этом помочь.
+          Переходи на сайт и оставь заявку. Первый урок бесплатный.
+        </p>
+        <a class="btn-primary promo-btn" href="https://desharschool.ru" target="_blank" rel="noopener noreferrer">Перейти на сайт</a>
+      </div>`;
     root.innerHTML = `
-      <div class="results">
+      <div class="results enter-anim">
         <h2>Результаты</h2>
         <p class="stat">Правильных ответов: <strong>${score}</strong> из ${questions.length}</p>
         <p class="stat">Уровень по шкале теста: <strong>${escapeHtml(levelLabel)}</strong></p>
+        <div class="level-block">${escapeHtml(levelText)}</div>
         <div class="block-title">Темы, в которых были ошибки</div>
         ${mistakesHtml}
-        <div class="block-title">Имеет смысл повторить в первую очередь</div>
-        ${repeatHtml}
-        <div class="level-block">${escapeHtml(levelText)}</div>
+        ${promoHtml}
         <div class="btn-row" style="margin-top:18px">
           <button type="button" class="btn-ghost" id="btn-retry">Пройти ещё раз</button>
         </div>
@@ -137,16 +143,17 @@
   }
 
   function runQuiz(questions) {
+    const normalizedQuestions = normalizeQuestions(questions);
     const answers = [];
     let index = 0;
 
     function step() {
-      if (index >= questions.length) {
-        renderResults(questions, answers);
+      if (index >= normalizedQuestions.length) {
+        renderResults(normalizedQuestions, answers);
         return;
       }
-      renderQuestion(questions, index, answers, (chosen) => {
-        const q = questions[index];
+      renderQuestion(normalizedQuestions, index, answers, (chosen) => {
+        const q = normalizedQuestions[index];
         const isCorrect = chosen === q.correct;
         answers.push({
           topic: q.topic,
@@ -160,6 +167,39 @@
     }
 
     step();
+  }
+
+  function normalizeQuestions(questions) {
+    return questions.map((q) => {
+      const pairs = [
+        { oldKey: "a", text: q.options.a },
+        { oldKey: "b", text: q.options.b },
+        { oldKey: "c", text: q.options.c },
+      ];
+      shuffleArray(pairs);
+      const letters = ["a", "b", "c"];
+      const nextOptions = {};
+      let nextCorrect = "a";
+      pairs.forEach((item, idx) => {
+        const nextKey = letters[idx];
+        nextOptions[nextKey] = item.text;
+        if (item.oldKey === q.correct) nextCorrect = nextKey;
+      });
+      return {
+        ...q,
+        options: nextOptions,
+        correct: nextCorrect,
+      };
+    });
+  }
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
   }
 
   fetch("questions.json")
