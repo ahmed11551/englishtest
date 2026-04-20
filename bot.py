@@ -27,6 +27,7 @@ from config import (
     BOT_TOKEN,
     BRAND_SUBTITLE,
     BRAND_TITLE,
+    CHAT_MINIMAL,
     LOG_LEVEL,
     TELEGRAM_PROXY,
     WEBAPP_URL,
@@ -116,14 +117,18 @@ def split_telegram_chunks(text: str, max_len: int = TELEGRAM_TEXT_LIMIT) -> list
 
 
 async def post_init(application: Application) -> None:
-    await application.bot.set_my_commands(
-        [
-            BotCommand("start", "Начать тест"),
-            BotCommand("help", "Справка и команды"),
-            BotCommand("cancel", "Прервать тест"),
-            BotCommand("skip", "Пропустить шаг с контактом"),
-        ]
-    )
+    commands = [
+        BotCommand("start", "Открыть мини-приложение"),
+        BotCommand("help", "Справка и команды"),
+    ]
+    if not CHAT_MINIMAL:
+        commands.extend(
+            [
+                BotCommand("cancel", "Прервать тест"),
+                BotCommand("skip", "Пропустить шаг с контактом"),
+            ]
+        )
+    await application.bot.set_my_commands(commands)
     me = await application.bot.get_me()
     logger.info("Бот @%s запущен (id=%s)", me.username, me.id)
 
@@ -168,10 +173,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     ud = context.user_data
     ud.clear()
-    ud["phase"] = "quiz"
-    ud["q_index"] = 0
-    ud["intro_answers"] = {}
-    ud["answers"] = []
+    ud["phase"] = "launcher"
 
     user = update.effective_user
     if user:
@@ -184,10 +186,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     welcome = (
         f"📘 {BRAND_TITLE}\n"
         f"{BRAND_SUBTITLE}\n\n"
-        "Сразу переходим к грамматике: 21 вопрос. Выбирай вариант a, b или c под сообщением.\n"
-        "В конце — результат, темы с ошибками и что повторить."
+        "Пройди тест в мини-приложении: там полный интерактив, анимации и персональные рекомендации."
     )
     await update.effective_message.reply_text(welcome, reply_markup=_start_keyboard())
+    if CHAT_MINIMAL:
+        return
+    ud["phase"] = "quiz"
+    ud["q_index"] = 0
+    ud["intro_answers"] = {}
+    ud["answers"] = []
     q = QUESTIONS[0]
     await update.effective_message.reply_text(
         format_question_message(q),
@@ -198,13 +205,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not update.effective_message:
         return
-    text = (
-        f"{BRAND_TITLE}\n\n"
-        "• /start — пройти тест с начала (текущий прогресс сбросится)\n"
-        "• /cancel — прервать тест\n"
-        "• /skip — после результатов пропустить отправку контакта менеджерам\n\n"
-        "Ответы на вопросы — кнопки a, b, c под сообщением."
-    )
+    if CHAT_MINIMAL:
+        text = (
+            f"{BRAND_TITLE}\n\n"
+            "• /start — открыть мини-приложение с тестом\n"
+            "• /help — показать эту справку\n\n"
+            "Тест и результаты доступны в Mini App."
+        )
+    else:
+        text = (
+            f"{BRAND_TITLE}\n\n"
+            "• /start — пройти тест с начала (текущий прогресс сбросится)\n"
+            "• /cancel — прервать тест\n"
+            "• /skip — после результатов пропустить отправку контакта менеджерам\n\n"
+            "Ответы на вопросы — кнопки a, b, c под сообщением."
+        )
     await update.effective_message.reply_text(text)
 
 
@@ -212,9 +227,7 @@ async def cmd_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not update.effective_message:
         return
     context.user_data.clear()
-    await update.effective_message.reply_text(
-        "Тест прерван. Чтобы начать заново, отправь /start."
-    )
+    await update.effective_message.reply_text("Сессия сброшена. Нажми /start.")
 
 
 async def on_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -223,6 +236,13 @@ async def on_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     ud = context.user_data
     phase = ud.get("phase")
     text = update.message.text.strip()
+
+    if CHAT_MINIMAL:
+        await update.message.reply_text(
+            "Тест проходит в мини-приложении. Нажми /start и открой его кнопкой.",
+            reply_markup=_start_keyboard(),
+        )
+        return
 
     if phase == "lead":
         ud["lead_contact"] = text
@@ -271,6 +291,9 @@ async def on_quiz_answer(
 ) -> None:
     query = update.callback_query
     if not query or not query.data:
+        return
+    if CHAT_MINIMAL:
+        await query.answer("Открой тест в мини-приложении через /start.", show_alert=True)
         return
     ud = context.user_data
 
@@ -442,9 +465,10 @@ def create_application() -> Application:
     app.add_error_handler(error_handler)
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
-    app.add_handler(CommandHandler("cancel", cmd_cancel))
-    app.add_handler(CommandHandler("skip", skip_lead))
-    app.add_handler(CallbackQueryHandler(on_quiz_answer, pattern=r"^q:\d+:[abc]$"))
+    if not CHAT_MINIMAL:
+        app.add_handler(CommandHandler("cancel", cmd_cancel))
+        app.add_handler(CommandHandler("skip", skip_lead))
+        app.add_handler(CallbackQueryHandler(on_quiz_answer, pattern=r"^q:\d+:[abc]$"))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
     return app
 

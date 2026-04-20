@@ -19,6 +19,13 @@ def _env(name: str, default: str = "") -> str:
     return (v or default).strip()
 
 
+def _env_bool(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 BOT_TOKEN = _env("BOT_TOKEN")
 
 # Отображаемое имя продукта (как в BotFather / подпись к /start)
@@ -41,3 +48,6 @@ TELEGRAM_PROXY = _env("TELEGRAM_PROXY")
 
 # Публичный HTTPS URL страницы Mini App (каталог `web/` после деплоя). Необязательно.
 WEBAPP_URL = _env("WEBAPP_URL")
+
+# Если true, Telegram-чат работает как лаунчер Mini App без текстового квиза.
+CHAT_MINIMAL = _env_bool("CHAT_MINIMAL", True)
