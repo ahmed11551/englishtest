@@ -28,12 +28,20 @@
   box-sizing: border-box;
 }
 
+html {
+  /* ~18px от типичных 16px — лучше читаемость при слабом зрении */
+  font-size: 112.5%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
   color: var(--text);
   background: var(--bg-deep);
   -webkit-font-smoothing: antialiased;
+  line-height: 1.45;
 }
 
 .app-bg {
@@ -46,7 +54,7 @@ body {
 }
 
 .shell {
-  max-width: 440px;
+  max-width: 468px;
   margin: 0 auto;
   padding: calc(12px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
 }
@@ -74,12 +82,12 @@ body {
 
 .brand-title {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.18rem;
   letter-spacing: 0.02em;
 }
 
 .brand-sub {
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 
@@ -103,7 +111,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 14px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
@@ -130,8 +138,8 @@ body {
 }
 
 .question-text {
-  font-size: 1.08rem;
-  line-height: 1.5;
+  font-size: 1.15rem;
+  line-height: 1.55;
   margin: 0 0 18px;
   font-weight: 500;
 }
@@ -146,12 +154,14 @@ body {
   display: block;
   width: 100%;
   text-align: left;
-  padding: 14px 16px;
+  padding: 16px 18px;
+  min-height: 52px;
   border-radius: 14px;
   border: 1px solid rgba(148, 163, 184, 0.25);
   background: rgba(15, 23, 42, 0.5);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 1.02rem;
+  line-height: 1.4;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
   opacity: 0;
@@ -196,7 +206,7 @@ body {
 
 .opt-key {
   display: inline-block;
-  min-width: 1.5rem;
+  min-width: 1.75rem;
   font-weight: 700;
   color: var(--accent);
   margin-right: 8px;
@@ -204,14 +214,14 @@ body {
 
 .question-meta {
   margin: 12px 2px 0;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #93c5fd;
 }
 
-.screen-start .lead {
+.lead {
   color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.55;
   margin: 0 0 18px;
 }
 
@@ -226,10 +236,11 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 18px;
+  padding: 16px 18px;
+  min-height: 50px;
   border-radius: var(--radius-sm);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.02rem;
   text-decoration: none;
   border: none;
   cursor: pointer;
@@ -254,13 +265,13 @@ body {
 
 .results h2 {
   margin: 0 0 12px;
-  font-size: 1.34rem;
+  font-size: 1.42rem;
   letter-spacing: 0.01em;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .stat {
-  font-size: 1rem;
+  font-size: 1.06rem;
   margin-bottom: 14px;
 }
 
@@ -269,7 +280,7 @@ body {
 }
 
 .block-title {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
@@ -284,8 +295,8 @@ body {
   margin: 0;
   padding-left: 1.1rem;
   color: #e2e8f0;
-  font-size: 0.92rem;
-  line-height: 1.55;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .topic-list-tight li + li {
@@ -312,7 +323,7 @@ body {
 }
 
 .kpi-label {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #bfdbfe;
@@ -320,7 +331,7 @@ body {
 
 .kpi-value {
   margin-top: 6px;
-  font-size: 1.45rem;
+  font-size: 1.55rem;
   font-weight: 700;
   color: #e0f2fe;
   line-height: 1.1;
@@ -339,8 +350,8 @@ body {
 
 .kpi-hint {
   margin-top: 6px;
-  font-size: 0.84rem;
-  line-height: 1.45;
+  font-size: 0.92rem;
+  line-height: 1.5;
   color: #cbd5e1;
 }
 
@@ -362,8 +373,8 @@ body {
   margin-top: 0;
   padding-top: 0;
   border-top: none;
-  font-size: 0.85rem;
-  line-height: 1.55;
+  font-size: 0.94rem;
+  line-height: 1.6;
   color: #dbeafe;
   white-space: pre-wrap;
 }
@@ -422,8 +433,8 @@ body {
 
 .recommend-cta {
   margin: 12px 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 1.02rem;
+  line-height: 1.55;
   color: #f8fafc;
 }
 
@@ -433,7 +444,7 @@ body {
 }
 
 .cta-secondary {
-  min-height: 44px;
+  min-height: 50px;
 }
 
 .sticky-cta-wrap {
@@ -442,8 +453,8 @@ body {
 
 .promo-btn {
   width: 100%;
-  font-size: 1rem;
-  min-height: 48px;
+  font-size: 1.06rem;
+  min-height: 52px;
   position: relative;
   overflow: hidden;
 }
@@ -467,15 +478,15 @@ body {
 .footer-title {
   margin: 0 0 8px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1.04rem;
   line-height: 1.35;
 }
 
 .footer-desc {
   margin: 0 0 14px;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .footer-card .btn-primary {
@@ -587,7 +598,7 @@ body {
 
 @media (max-width: 420px) {
   .results h2 {
-    font-size: 1.26rem;
+    font-size: 1.32rem;
   }
 
   .sticky-cta-wrap {
