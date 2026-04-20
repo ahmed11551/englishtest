@@ -107,6 +107,30 @@
     return Array.from(set).sort();
   }
 
+  function buildPersonalRecommendations(wrongTopics) {
+    if (!wrongTopics.length) {
+      return {
+        title: "Персональный план роста",
+        points: [
+          "Ошибок нет — текущая база уже сильная.",
+          "Чтобы расти дальше, добавляй разговорную практику 3-4 раза в неделю.",
+          "Фокус на естественной речи: collocations, phrasal verbs и произношение.",
+        ],
+      };
+    }
+
+    const top = wrongTopics.slice(0, 3);
+    const focusLine = top.length === 1 ? top[0] : top.join(", ");
+    return {
+      title: "Персональные рекомендации по ошибкам",
+      points: [
+        `Твой главный фокус сейчас: ${focusLine}.`,
+        "Сначала закрепи правила, затем отработай их на коротких устных примерах.",
+        "Если хочешь быстрее перейти на следующий уровень, лучше идти с преподавателем и обратной связью.",
+      ],
+    };
+  }
+
   function renderResults(questions, answers) {
     const score = answers.filter((a) => a.is_correct).length;
     const [levelLabel, levelKey] = scoreToLevel(score);
@@ -118,9 +142,12 @@
       mistakesHtml = `<p class="stat">Ошибок по темам нет — все ответы верные.</p>`;
     }
     const levelText = LEVEL_TEXTS[levelKey] || "";
-    const promoHtml = `
-      <div class="promo-card">
-        <p class="promo-text">
+    const recommendations = buildPersonalRecommendations(wrong);
+    const recommendationsHtml = `
+      <div class="recommend-card">
+        <div class="block-title">${escapeHtml(recommendations.title)}</div>
+        <ul class="topic-list">${recommendations.points.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+        <p class="recommend-cta">
           Если ты хочешь повысить свой уровень и научиться говорить по-английски. Я могу в этом помочь.
           Переходи на сайт и оставь заявку. Первый урок бесплатный.
         </p>
@@ -134,7 +161,7 @@
         <div class="level-block">${escapeHtml(levelText)}</div>
         <div class="block-title">Темы, в которых были ошибки</div>
         ${mistakesHtml}
-        ${promoHtml}
+        ${recommendationsHtml}
         <div class="btn-row" style="margin-top:18px">
           <button type="button" class="btn-ghost" id="btn-retry">Пройти ещё раз</button>
         </div>
