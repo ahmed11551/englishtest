@@ -187,7 +187,7 @@
         </p>
         <div class="cta-stack">
           <a class="btn-primary promo-btn" href="https://desharschool.ru" target="_blank" rel="noopener noreferrer">Перейти на сайт</a>
-          <a class="btn-ghost cta-secondary" href="https://t.me/desharschool" target="_blank" rel="noopener noreferrer">Написать в Telegram</a>
+          <a class="btn-ghost cta-secondary" href="https://t.me/midniqhtman" target="_blank" rel="noopener noreferrer">Написать в Telegram</a>
         </div>
         <div class="sticky-cta-wrap">
           <a class="btn-primary promo-btn sticky-cta" href="https://desharschool.ru" target="_blank" rel="noopener noreferrer">Перейти на сайт</a>
